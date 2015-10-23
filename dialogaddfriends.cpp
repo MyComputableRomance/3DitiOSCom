@@ -5,7 +5,6 @@ DialogAddFriends::DialogAddFriends(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogAddFriends)
 {
-    _addFriendManager = new QNetworkAccessManager();
     ui->setupUi(this);
 }
 
@@ -21,8 +20,9 @@ void DialogAddFriends::on_Ok_clicked()
 
 void DialogAddFriends::on_btnAddFriend_clicked()
 {
-    QString friendName = ui->lineFriendsUsername->text();
-    QByteArray postData;
+    QString keyString = ui->lineFriendsUsername->text();
+    addFriendByKey(keyString);
+    /*QByteArray postData;
 
     QJsonObject addFriendJson;
     addFriendJson.insert("type", "addFriend");
@@ -36,8 +36,28 @@ void DialogAddFriends::on_btnAddFriend_clicked()
     _request.setUrl(addFriendUrl);
     _request.setRawHeader("Content-Type", "application/json");
     connect(_addFriendManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
-    _reply = _addFriendManager->post(_request,postData);
+    _reply = _addFriendManager->post(_request,postData);*/
 
+}
+
+void DialogAddFriends::addFriendByKey(QString _keyString)
+{
+    QNetworkAccessManager* _manager = new QNetworkAccessManager();
+
+    QByteArray postData;
+    QJsonObject jsonData;
+    jsonData.insert("type", "addFriend");
+    jsonData.insert("keyString", _keyString);
+    QJsonDocument jdoc;
+    jdoc.setObject(jsonData);
+    postData = jdoc.toJson(QJsonDocument::Compact);
+
+    QUrl addFriendUrl(QString(SERVER_FRIEND+UserObjectId));
+    QNetworkRequest addRequest;
+    addRequest.setUrl(addFriendUrl);
+    addRequest.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("application/json"));
+    connect(_manager,SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
+    _reply = _manager->post(addRequest, postData);
 }
 
 void DialogAddFriends::replyFinished(QNetworkReply *networkReply)

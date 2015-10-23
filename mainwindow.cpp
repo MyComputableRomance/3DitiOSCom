@@ -114,3 +114,9 @@ void MainWindow::on_btnUpload_clicked()
     DialogUpload* du = new DialogUpload(this);
     du->show();
 }
+
+void MainWindow::on_btnDownload_clicked()
+{
+    DialogDownload* dd = new DialogDownload(this);
+    dd->show();
+}

@@ -16,6 +16,10 @@ public:
     explicit DialogAddFriends(QWidget *parent = 0);
     ~DialogAddFriends();
 
+    //void addFriendByEmail(QString);
+    void addFriendByKey(QString);
+    //void addFriendByPhone(QString);
+
 private slots:
     void on_Ok_clicked();
 
@@ -25,9 +29,7 @@ private slots:
 
 private:
     Ui::DialogAddFriends *ui;
-    QNetworkAccessManager* _addFriendManager;
     QNetworkReply* _reply;
-    QNetworkRequest _request;
 };
 
 #endif // DIALOGADDFRIENDS_H

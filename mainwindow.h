@@ -9,6 +9,7 @@
 #include "dialoglogin.h"
 #include "dialogfriends.h"
 #include "dialogupload.h"
+#include "dialogdownload.h"
 
 namespace Ui {
 class MainWindow;
@@ -40,6 +41,8 @@ private slots:
     void on_btnFriend_clicked();
 
     void on_btnUpload_clicked();
+
+    void on_btnDownload_clicked();
 
 private:
     Ui::MainWindow *ui;

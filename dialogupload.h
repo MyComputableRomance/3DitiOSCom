@@ -7,6 +7,7 @@
 #include <QHttpMultiPart>
 #include <QHttpPart>
 #include <QFile>
+#include <QFileInfo>
 
 namespace Ui {
 class DialogUpload;
@@ -25,10 +26,24 @@ private slots:
 
     void replyFinished(QNetworkReply*);
 
+    void on_btnDownload_clicked();
+
+    void on_btnCancelDownload_clicked();
+
+    void downloadFinished(QNetworkReply*);
+
+    void httpReadyRead();
+
+    void QdownloadProgress(qint64 bytesSent, qint64 bytesTotal);
+
 private:
     Ui::DialogUpload *ui;
 
     QNetworkReply* _reply;
+    QNetworkReply* _fileReply;
+    QString path;
+
+    QFile* file;
 };
 
 #endif // DIALOGUPLOAD_H

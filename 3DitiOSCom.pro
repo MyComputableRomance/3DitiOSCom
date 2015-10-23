@@ -17,22 +17,25 @@ SOURCES += main.cpp\
     dialogregister.cpp \
     dialogfriends.cpp \
     dialoglogin.cpp \
-    dialogdownload.cpp \
     dialogaddfriends.cpp \
-    dialogupload.cpp
+    dialogupload.cpp \
+    filedownloader.cpp \
+    dialogdownload.cpp
 
 HEADERS  += mainwindow.h \
     dialogregister.h \
     constant.h \
     dialogfriends.h \
     dialoglogin.h \
-    dialogdownload.h \
     dialogaddfriends.h \
-    dialogupload.h
+    dialogupload.h \
+    filedownloader.h \
+    dialogdownload.h
 
 FORMS    += mainwindow.ui \
     dialogregister.ui \
     dialogfriends.ui \
     dialoglogin.ui \
     dialogaddfriends.ui \
-    dialogupload.ui
+    dialogupload.ui \
+    dialogdownload.ui
