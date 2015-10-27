@@ -61,6 +61,10 @@ private slots:
 
     void timerRcv();
 
+    void on_btnlastmsg_clicked();
+
+    void lastMsgFinished(QNetworkReply*);
+
 private:
     Ui::DialogFriends *ui;
 
@@ -68,6 +72,7 @@ private:
     QNetworkRequest _request;
     QNetworkReply* _reply;
     QStringList listFriendName;
+    QList<QJsonObject> lastMsgList;
 
     QString selectedFriendName;
     QString conversationId;

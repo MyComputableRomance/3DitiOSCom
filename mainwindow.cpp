@@ -111,12 +111,29 @@ void MainWindow::on_btnFriend_clicked()
 
 void MainWindow::on_btnUpload_clicked()
 {
-    DialogUpload* du = new DialogUpload(this);
-    du->show();
 }
 
 void MainWindow::on_btnDownload_clicked()
 {
     DialogDownload* dd = new DialogDownload(this);
     dd->show();
+}
+
+void MainWindow::on_btnSync_clicked()
+{
+    DialogModify* dm = new DialogModify(this);
+    dm->show();
+}
+
+void MainWindow::on_btnPrint_clicked()
+{
+    mlh.execute();
+    QList<QStringList> result = mlh.getModelList();
+    for(int i = 0;i < result.size();i ++)
+    {
+        for(int j = 0;j < result.at(i).size();j ++)
+        {
+            ui->console->append(result.at(i).at(j));
+        }
+    }
 }

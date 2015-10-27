@@ -13,6 +13,8 @@ DialogFriends::DialogFriends(QWidget *parent) :
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(timerRcv()));
     timer->start(500);
+
+    //ui->browserContext->append("WEQWEQWE");
 }
 
 DialogFriends::~DialogFriends()
@@ -23,7 +25,9 @@ DialogFriends::~DialogFriends()
 
 void DialogFriends::timerRcv()
 {
-    rcvCon(10, true);
+    //ui->browserContext->append("12312");
+    if(selectedFriendName != "")
+        rcvCon(10, true);
 }
 
 void DialogFriends::getFriendList()
@@ -64,7 +68,6 @@ void DialogFriends::replyFinished(QNetworkReply *reply)
                                 {
 
                                     QJsonValue friendsObjectUsername = friendsObject.take("username");
-                                    //ui->browserContext->append(friendsObjectUsername.toString());
                                     listFriendName.append(friendsObjectUsername.toString());
                                 }
                             }
@@ -80,6 +83,7 @@ void DialogFriends::replyFinished(QNetworkReply *reply)
 
 void DialogFriends::createFriendList()
 {
+    ui->browserContext->append("1");
     ui->listFriends->addItems(listFriendName);
     connect(ui->listFriends, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(listItemClicked(QListWidgetItem*)));
 }
@@ -108,10 +112,10 @@ void DialogFriends::listItemClicked(QListWidgetItem *item)
 {
     QString friendName = item->text();
     selectedFriendName = friendName;
-    //ui->browserContext->append(selectedFriendName);
+    ui->browserContext->append(selectedFriendName);
     setConversationId(selectedFriendName);
 
-    ui->browserContext->clear();
+    //ui->browserContext->clear();
 }
 
 void DialogFriends::cvsReplyFinished(QNetworkReply *reply)
@@ -147,7 +151,7 @@ void DialogFriends::cvsReplyFinished(QNetworkReply *reply)
                                     if(cvsName == Username && cvsFriendName == selectedFriendName || cvsName == selectedFriendName && cvsFriendName == Username)
                                     {
                                         conversationId = cvsOb.take("objectId").toString();
-                                        //ui->browserContext->append(conversationId);
+                                        ui->browserContext->append(conversationId);
 
                                         rcvCon(10, false);
                                         reply->deleteLater();
@@ -265,7 +269,7 @@ void DialogFriends::msgReplyFinished(QNetworkReply * reply)
 
 void DialogFriends::on_btnTest_clicked()
 {
-    rcvCon();
+
 }
 
 void DialogFriends::rcvCon(int _num, bool _check)
@@ -273,6 +277,7 @@ void DialogFriends::rcvCon(int _num, bool _check)
     if(_num < 0 || _num > 1000)
         _num = 10;
 
+    //ui->browserContext->append("2");
     QNetworkAccessManager* _rcvManager = new QNetworkAccessManager();
     QNetworkRequest _rcvRequest;
 
@@ -283,8 +288,9 @@ void DialogFriends::rcvCon(int _num, bool _check)
     msgLog.setQuery(params);
 
     _rcvRequest.setUrl(msgLog);
+    _rcvRequest.setRawHeader("Content-Type", "application/json");
     _rcvRequest.setRawHeader("X-LC-Id", LCAPPID);
-    _rcvRequest.setRawHeader("X-LC-Key", LCAPPKEY);
+    _rcvRequest.setRawHeader("X-LC-Key", LCAPPMASTERKEY);
 
     if(!_check)
         connect(_rcvManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(msgLogFinished(QNetworkReply*)));
@@ -298,10 +304,12 @@ void DialogFriends::rcvCon(int _num, bool _check)
 //used in the beginning of initiation without checking timestamp
 void DialogFriends::msgLogFinished(QNetworkReply * reply)
 {
+    //ui->browserContext->append("3");
+    //ui->browserContext->append(reply->readAll());
     if(reply->error() == QNetworkReply::NoError)
     {
         QByteArray result = reply->readAll();
-        //ui->browserContext->append(result);
+        ui->browserContext->append(result);
         QJsonParseError jsonParse;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(result, &jsonParse);
         if(jsonParse.error == QJsonParseError::NoError)
@@ -428,3 +436,59 @@ void DialogFriends::msgLogCheckedFinished(QNetworkReply *reply)
     reply->deleteLater();
 }
 
+
+void DialogFriends::on_btnlastmsg_clicked()
+{
+    int fn = listFriendName.size();
+    QNetworkAccessManager* manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(lastMsgFinished(QNetworkReply*)));
+    QNetworkRequest request;
+    for(int i = 0;i < fn;i ++)
+    {
+        setConversationId(listFriendName.at(i));
+
+        QUrl msgLog(QString(LCSERVER_MSG_LOG));
+        QUrlQuery params;
+        params.addQueryItem("convid", conversationId);
+        params.addQueryItem("limit", QString::number(1));
+        msgLog.setQuery(params);
+
+        request.setUrl(msgLog);
+        request.setRawHeader("X-LC-Id", LCAPPID);
+        request.setRawHeader("X-LC-Key", LCAPPKEY);
+
+        _reply = manager->get(request);
+    }
+}
+
+void DialogFriends::lastMsgFinished(QNetworkReply *reply)
+{
+    if(reply->error() == QNetworkReply::NoError)
+    {
+        QByteArray result = reply->readAll();
+        QJsonParseError jsonParse;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(result, &jsonParse);
+        if(jsonParse.error == QJsonParseError::NoError)
+        {
+            if(jsonDoc.isArray())
+            {
+                QJsonObject lastMsg;
+                QJsonArray msgArray = jsonDoc.array();
+                if(msgArray.size() <= 0)
+                {
+                    lastMsg.insert("data", "");
+                    lastMsg.insert("timestamp", "");
+                }
+                else
+                {
+                    QJsonValue msgValue = jsonDoc.array().at(0);
+                    lastMsg.insert("data", msgValue.toObject().take("data"));
+                    lastMsg.insert("timestamp", msgValue.toObject().take("timestamp"));
+                }
+
+                lastMsgList.push_back(lastMsg);
+            }
+        }
+    }
+    reply->deleteLater();
+}

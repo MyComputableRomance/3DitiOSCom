@@ -8,8 +8,9 @@
 #include "dialogregister.h"
 #include "dialoglogin.h"
 #include "dialogfriends.h"
-#include "dialogupload.h"
 #include "dialogdownload.h"
+#include "dialogmodify.h"
+#include "modellisthandler.h"
 
 namespace Ui {
 class MainWindow;
@@ -44,11 +45,16 @@ private slots:
 
     void on_btnDownload_clicked();
 
+    void on_btnSync_clicked();
+
+    void on_btnPrint_clicked();
+
 private:
     Ui::MainWindow *ui;
     QNetworkAccessManager *networkAccessManager;
     QNetworkReply *networkReply;
     QNetworkRequest networkRequest;
+    ModelListHandler mlh;
 
 };
 

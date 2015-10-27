@@ -46,8 +46,6 @@ void DialogLogin::on_btnLogin_clicked()
 
 void DialogLogin::replyFinished(QNetworkReply *networkReply)
 {
-    //QByteArray bytes = networkReply->readAll();
-    //ui->labelConsole->setText(QString(bytes));
     if(networkReply->error() == QNetworkReply::NoError)
     {
         QByteArray bytes = networkReply->readAll();

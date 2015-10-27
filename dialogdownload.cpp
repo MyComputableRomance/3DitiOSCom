@@ -22,7 +22,9 @@ void DialogDownload::on_btnDownload_clicked()
 
 void DialogDownload::saveFile()
 {
-    QFile* file = new QFile(QString("/Users/Tyler/Desktop/test.png"));
+    QUrl url(QString(ui->lineEdit->text()));
+    QFileInfo* fileInfo = new QFileInfo(url.path());
+    QFile* file = new QFile(QString(QString("/Users/Tyler/Desktop/") + fileInfo->fileName()));
     file->open(QIODevice::WriteOnly);
     file->write(fd->downloadedData());
     file->close();
@@ -31,7 +33,5 @@ void DialogDownload::saveFile()
 
 void DialogDownload::on_newFile_clicked()
 {
-    QFile* file = new QFile("/Users/Tyler/Desktop/tes.dat");
-    file->open(QIODevice::ReadWrite);
-    file->close();
+
 }
